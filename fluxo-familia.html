@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluxo Família</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f0e8;
+    --cream: #ede8dc;
+    --accent: #c8502a;
+    --muted: #8a8478;
+    --green: #2a6b4a;
+    --green-light: #d4ead8;
+    --red-light: #f5ddd8;
+    --border: #d4cfc4;
+    --blue: #2a5a9a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+  }
+
+  /* LOGIN */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .login-box {
+    width: 100%;
+    max-width: 360px;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    background: #fff;
+  }
+  .login-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .login-logo span { color: var(--accent); font-style: italic; }
+  .login-sub {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin-bottom: 28px;
+  }
+  .login-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .login-input {
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 1.1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    outline: none;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--paper);
+    color: var(--ink);
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+  .login-input:focus { border-color: var(--accent); }
+  .login-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .login-btn:hover { background: #a83f1f; }
+  .login-hint {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+
+  /* APP */
+  #appScreen { display: none; }
+
+  header {
+    border-bottom: 1.5px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; }
+  .logo span { color: var(--accent); font-style: italic; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .familia-badge {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 4px 12px;
+    color: var(--muted);
+  }
+  .sair-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  main { max-width: 600px; margin: 0 auto; padding: 0 16px 100px; }
+
+  /* SALDO */
+  .saldo-card {
+    margin: 20px 0 0;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 20px 18px;
+    background: var(--cream);
+  }
+  .saldo-label {
+    font-size: 0.63rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .saldo-valor {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 18px;
+  }
+  .saldo-valor.positivo { color: var(--green); }
+  .saldo-valor.negativo { color: var(--accent); }
+  .saldo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .saldo-item {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .saldo-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .saldo-item-label { font-size: 0.63rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .saldo-item-val { font-family: 'DM Serif Display', serif; font-size: 1rem; }
+
+  /* MÊS NAV */
+  .mes-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 18px 0 0;
+  }
+  .mes-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .mes-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .mes-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    min-width: 120px;
+    text-align: center;
+  }
+
+  /* FORM */
+  .form-card {
+    margin: 18px 0 0;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-card:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,80,42,0.07);
+  }
+
+  /* TIPO TOGGLE */
+  .tipo-toggle {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+  .tipo-btn {
+    flex: 1;
+    padding: 13px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .tipo-btn.active.entrada { background: var(--green-light); color: var(--green); }
+  .tipo-btn.active.saida   { background: var(--red-light); color: var(--accent); }
+
+  .form-desc {
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.88rem;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 14px 16px;
+    outline: none;
+    background: transparent;
+    color: var(--ink);
+  }
+  .form-desc::placeholder { color: var(--border); }
+
+  .cat-pills {
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.63rem;
+    padding: 4px 10px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .cat-pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .form-bottom {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px 14px;
+    gap: 10px;
+  }
+  .currency { font-size: 0.9rem; color: var(--muted); }
+  .valor-input {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.7rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--ink);
+    width: 130px;
+    letter-spacing: -0.02em;
+  }
+  .valor-input::placeholder { color: var(--border); }
+  .add-btn {
+    margin-left: auto;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: transform 0.15s, background 0.15s;
+  }
+  .add-btn:hover { background: #a83f1f; }
+  .add-btn:disabled { background: var(--border); cursor: not-allowed; }
+
+  /* LISTA */
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2px;
+  }
+  .section-title { font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+  .sync-indicator { font-size: 0.63rem; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  .sync-dot.syncing { background: #c8852a; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+    animation: slideIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+  .entry-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .entry-info { flex: 1; overflow: hidden; }
+  .entry-desc { font-size: 0.83rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .entry-meta { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+  .entry-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .entry-val.entrada { color: var(--green); }
+  .entry-val.saida { color: var(--accent); }
+  .entry-del {
+    background: none; border: none; color: var(--border);
+    cursor: pointer; font-size: 1rem; padding: 0 2px;
+    transition: color 0.15s; flex-shrink: 0;
+  }
+  .entry-del:hover { color: var(--accent); }
+
+  .empty-state {
+    text-align: center; padding: 36px 20px; color: var(--muted);
+  }
+  .empty-icon { font-size: 1.8rem; margin-bottom: 8px; opacity: 0.4; }
+  .empty-text { font-size: 0.75rem; opacity: 0.7; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--paper);
+    padding: 10px 20px; border-radius: 8px;
+    font-size: 0.73rem; letter-spacing: 0.04em;
+    opacity: 0; pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 500; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 30px; color: var(--muted); font-size: 0.75rem; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Flu<span>xo</span></div>
+    <div class="login-sub">Controle financeiro familiar</div>
+    <div class="login-label">Código da família</div>
+    <input class="login-input" id="codigoInput" placeholder="EX: SILVA2024" maxlength="20"
+      oninput="this.value=this.value.toUpperCase()">
+    <button class="login-btn" onclick="entrar()">Entrar →</button>
+    <div class="login-hint">
+      Crie um código e compartilhe<br>com sua esposa para ver tudo junto.
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen">
+  <header>
+    <div class="logo">Flu<span>xo</span></div>
+    <div class="header-right">
+      <div class="familia-badge" id="familiaBadge"></div>
+      <button class="sair-btn" onclick="sair()">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- SALDO -->
+    <div class="saldo-card">
+      <div class="saldo-label">Saldo do mês</div>
+      <div class="saldo-valor positivo" id="saldoValor">R$ 0,00</div>
+      <div class="saldo-grid">
+        <div class="saldo-item">
+          <div class="saldo-dot" style="background:var(--green)"></div>
+          <div>
+            <div class="saldo-item-label">Entradas</div>
+            <div class="saldo-item-val" id="totalEntradas">R$ 0,00</div>
+          </div>
+        </div>
+        <div class="saldo-item">
+          <div class="saldo-dot" style="background:var(--accent)"></div>
+          <div>
+            <div class="saldo-item-label">Saídas</div>
+            <div class="saldo-item-val" id="totalSaidas">R$ 0,00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MÊS NAV -->
+    <div class="mes-nav">
+      <button class="mes-btn" onclick="mudarMes(-1)">‹</button>
+      <div class="mes-label" id="mesLabel"></div>
+      <button class="mes-btn" onclick="mudarMes(1)">›</button>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-card">
+      <div class="tipo-toggle">
+        <button class="tipo-btn entrada active" id="btnEntrada" onclick="setTipo('entrada')">↑ Entrada</button>
+        <button class="tipo-btn saida" id="btnSaida" onclick="setTipo('saida')">↓ Saída</button>
+      </div>
+      <input class="form-desc" id="descInput" placeholder="Descrição..." maxlength="60">
+      <div class="cat-pills" id="catPills"></div>
+      <div class="form-bottom">
+        <span class="currency">R$</span>
+        <input class="valor-input" id="valorInput" type="number" placeholder="0,00" step="0.01" min="0">
+        <button class="add-btn" id="addBtn" onclick="adicionar()">Adicionar</button>
+      </div>
+    </div>
+
+    <!-- LISTA -->
+    <div class="section-head">
+      <div class="section-title">Lançamentos</div>
+      <div class="sync-indicator">
+        <div class="sync-dot" id="syncDot"></div>
+        <span id="syncText">ao vivo</span>
+      </div>
+    </div>
+    <div id="lista"><div class="loading">Carregando...</div></div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://pfqrhrbsgpmpvfxjgutj.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Y-yYqwjy-2qyDRza22HGCg_2rOsloLS';
+const SUPABASE_ANON = SUPABASE_KEY;
+
+const CATS_ENTRADA = [
+  { id: 'salario',  label: 'Salário',   color: '#2a6b4a' },
+  { id: 'freela',   label: 'Freela',    color: '#2a5a9a' },
+  { id: 'bonus',    label: 'Bônus',     color: '#7a3a9a' },
+  { id: 'outro_e',  label: 'Outro',     color: '#8a8478' },
+];
+const CATS_SAIDA = [
+  { id: 'alimentacao', label: 'Alimentação', color: '#c8852a' },
+  { id: 'moradia',     label: 'Moradia',     color: '#9a6a2a' },
+  { id: 'transporte',  label: 'Transporte',  color: '#2a5a9a' },
+  { id: 'saude',       label: 'Saúde',       color: '#2a6b4a' },
+  { id: 'lazer',       label: 'Lazer',       color: '#7a3a9a' },
+  { id: 'outro_s',     label: 'Outro',       color: '#8a8478' },
+];
+
+let codigoFamilia = '';
+let tipo = 'entrada';
+let catSelecionada = 'outro_e';
+let lancamentos = [];
+let mesAtual = new Date();
+mesAtual.setDate(1);
+let polling = null;
+
+// ── API ──────────────────────────────────────────────────────
+async function api(method, path, body) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    method,
+    headers: {
+      'apikey': SUPABASE_ANON,
+      'Authorization': 'Bearer ' + SUPABASE_ANON,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : '',
+      'X-Client-Info': 'supabase-js/2.0.0',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    console.error('Supabase error:', res.status, txt);
+    throw new Error(txt);
+  }
+  return res.status === 204 ? null : res.json();
+}
+
+async function buscarLancamentos() {
+  const inicio = mesAtual.toISOString().slice(0,7) + '-01';
+  const fim = new Date(mesAtual.getFullYear(), mesAtual.getMonth()+1, 1).toISOString().slice(0,10);
+  return api('GET',
+    `lancamentos?codigo_familia=eq.${encodeURIComponent(codigoFamilia)}&criado_em=gte.${inicio}T00:00:00Z&criado_em=lt.${fim}T00:00:00Z&order=criado_em.desc`
+  );
+}
+
+async function inserir(dados) {
+  return api('POST', 'lancamentos', dados);
+}
+
+async function deletar(id) {
+  return api('DELETE', `lancamentos?id=eq.${id}`);
+}
+
+// ── LOGIN ────────────────────────────────────────────────────
+function entrar() {
+  const v = document.getElementById('codigoInput').value.trim().toUpperCase();
+  if (v.length < 3) { toast('Digite um código com pelo menos 3 letras'); return; }
+  codigoFamilia = v;
+  localStorage.setItem('fluxo_codigo', v);
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'block';
+  document.getElementById('familiaBadge').textContent = v;
+  iniciar();
+}
+
+function sair() {
+  localStorage.removeItem('fluxo_codigo');
+  clearInterval(polling);
+  codigoFamilia = '';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('codigoInput').value = '';
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+function iniciar() {
+  renderPills();
+  atualizarMesLabel();
+  carregar();
+  polling = setInterval(carregar, 8000); // atualiza a cada 8s
+}
+
+async function carregar() {
+  setSyncing(true);
+  try {
+    lancamentos = await buscarLancamentos();
+    renderLista();
+    calcularSaldo();
+  } catch(e) {
+    console.error(e);
+  }
+  setSyncing(false);
+}
+
+// ── MÊS ─────────────────────────────────────────────────────
+function mudarMes(dir) {
+  mesAtual.setMonth(mesAtual.getMonth() + dir);
+  atualizarMesLabel();
+  carregar();
+}
+
+function atualizarMesLabel() {
+  const opts = { month: 'long', year: 'numeric' };
+  const label = mesAtual.toLocaleDateString('pt-BR', opts);
+  document.getElementById('mesLabel').textContent = label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+// ── TIPO / CATS ──────────────────────────────────────────────
+function setTipo(t) {
+  tipo = t;
+  document.getElementById('btnEntrada').className = 'tipo-btn entrada' + (t==='entrada' ? ' active' : '');
+  document.getElementById('btnSaida').className = 'tipo-btn saida' + (t==='saida' ? ' active' : '');
+  catSelecionada = t === 'entrada' ? 'outro_e' : 'outro_s';
+  renderPills();
+}
+
+function renderPills() {
+  const cats = tipo === 'entrada' ? CATS_ENTRADA : CATS_SAIDA;
+  document.getElementById('catPills').innerHTML = cats.map(c =>
+    `<button class="cat-pill ${c.id===catSelecionada?'active':''}" onclick="selCat('${c.id}')">${c.label}</button>`
+  ).join('');
+}
+
+function selCat(id) {
+  catSelecionada = id;
+  renderPills();
+}
+
+// ── ADICIONAR ────────────────────────────────────────────────
+async function adicionar() {
+  const desc = document.getElementById('descInput').value.trim();
+  const valor = parseFloat(document.getElementById('valorInput').value);
+  if (!valor || valor <= 0) { toast('Informe um valor válido'); return; }
+
+  const btn = document.getElementById('addBtn');
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  try {
+    await inserir({
+      codigo_familia: codigoFamilia,
+      tipo,
+      descricao: desc || (tipo==='entrada' ? 'Entrada' : 'Saída'),
+      categoria: catSelecionada,
+      valor,
+    });
+    document.getElementById('descInput').value = '';
+    document.getElementById('valorInput').value = '';
+    toast(tipo==='entrada' ? 'Entrada registrada ✓' : 'Saída registrada ✓');
+    await carregar();
+  } catch(e) {
+    toast('Erro ao salvar. Tente novamente.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Adicionar';
+}
+
+// ── DELETAR ──────────────────────────────────────────────────
+async function remover(id) {
+  try {
+    await deletar(id);
+    toast('Lançamento removido');
+    await carregar();
+  } catch(e) {
+    toast('Erro ao remover.');
+  }
+}
+
+// ── RENDER ───────────────────────────────────────────────────
+function renderLista() {
+  const el = document.getElementById('lista');
+  if (!lancamentos || lancamentos.length === 0) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">${tipo==='entrada'?'💰':'📋'}</div>
+      <div class="empty-text">Nenhum lançamento neste mês.</div>
+    </div>`;
+    return;
+  }
+
+  const allCats = [...CATS_ENTRADA, ...CATS_SAIDA];
+  el.innerHTML = lancamentos.map(l => {
+    const cat = allCats.find(c => c.id === l.categoria) || { color: '#8a8478', label: '' };
+    const sinal = l.tipo === 'entrada' ? '+' : '-';
+    const data = new Date(l.criado_em);
+    const dataFmt = data.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}) +
+      ' · ' + data.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="entry">
+      <div class="entry-dot" style="background:${cat.color}"></div>
+      <div class="entry-info">
+        <div class="entry-desc">${l.descricao}</div>
+        <div class="entry-meta">${cat.label} · ${dataFmt}</div>
+      </div>
+      <div class="entry-val ${l.tipo}">${sinal} ${fmt(l.valor)}</div>
+      <button class="entry-del" onclick="remover('${l.id}')">×</button>
+    </div>`;
+  }).join('');
+}
+
+function calcularSaldo() {
+  const entradas = lancamentos.filter(l=>l.tipo==='entrada').reduce((s,l)=>s+Number(l.valor),0);
+  const saidas   = lancamentos.filter(l=>l.tipo==='saida').reduce((s,l)=>s+Number(l.valor),0);
+  const saldo    = entradas - saidas;
+
+  document.getElementById('totalEntradas').textContent = fmt(entradas);
+  document.getElementById('totalSaidas').textContent   = fmt(saidas);
+  const el = document.getElementById('saldoValor');
+  el.textContent = fmt(Math.abs(saldo));
+  el.className   = 'saldo-valor ' + (saldo >= 0 ? 'positivo' : 'negativo');
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+function fmt(v) {
+  return 'R$ ' + Number(v).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+
+function setSyncing(s) {
+  document.getElementById('syncDot').className = 'sync-dot' + (s?' syncing':'');
+  document.getElementById('syncText').textContent = s ? 'sincronizando' : 'ao vivo';
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ── AUTO LOGIN ───────────────────────────────────────────────
+document.getElementById('codigoInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') entrar();
+});
+
+const saved = localStorage.getItem('fluxo_codigo');
+if (saved) {
+  document.getElementById('codigoInput').value = saved;
+  entrar();
+}
+</script>
+</body>
+</html>
