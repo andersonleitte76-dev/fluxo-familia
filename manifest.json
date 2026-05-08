@@ -7,7 +7,7 @@
   "scope": "/fluxo-familia/",
   "display": "standalone",
   "background_color": "#0a0a0a",
-  "theme_color": "#00e676",
+  "theme_color": "#0a0a0a",
   "orientation": "portrait",
   "icons": [
     {
