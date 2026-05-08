@@ -1,6 +1,0 @@
-Add-Type -AssemblyName System.Drawing
-foreach ($f in @("icon-192.png","icon-512.png")) {
-  $img = [System.Drawing.Image]::FromFile((Resolve-Path $f))
-  Write-Host "$f → $($img.Width)x$($img.Height)"
-  $img.Dispose()
-}
