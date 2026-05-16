@@ -543,7 +543,57 @@ main{max-width:640px;margin:0 auto;padding:0 16px 90px;}
 <script>
 const SB='https://pfqrhrbsgpmpvfxjgutj.supabase.co';
 const KEY='sb_publishable_Y-yYqwjy-2qyDRza22HGCg_2rOsloLS';
+// =============================================================
+// ETAPA 3.1 — Fundação para Supabase Auth nativo
+// Este bloco ADICIONA o SDK. O código antigo (api(), entrar(),
+// criarFamilia()) continua funcionando inalterado até a Fatia 3.2.
+// =============================================================
 
+const supabase = window.supabase.createClient(SB, KEY, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true   // necessário para links de email (confirm/reset/invite)
+  }
+});
+
+// Exposto globalmente para debug no DevTools console:
+window.sb = supabase;
+
+// ---------- Helpers que vão ser usados a partir da Fatia 3.2 ----------
+
+// Retorna o user logado pelo Supabase Auth nativo, ou null.
+async function getCurrentUser() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) return null;
+  return data.user;
+}
+
+// Retorna o family_id do usuário atual (MVP: 1 família por user).
+// Cacheado em memória durante a sessão.
+let _cachedFamilyId = null;
+async function getCurrentFamilyId() {
+  if (_cachedFamilyId) return _cachedFamilyId;
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const { data, error } = await supabase
+    .from('family_members')
+    .select('family_id')
+    .eq('user_id', user.id)
+    .maybeSingle();
+  if (error || !data) return null;
+  _cachedFamilyId = data.family_id;
+  return _cachedFamilyId;
+}
+
+// Listener centralizado de auth: dispara em login/logout/refresh de token.
+// Por enquanto apenas loga no console — na Fatia 3.2 vai redirecionar UI.
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('[auth-event]', event, session?.user?.email || '(sem usuário)');
+  if (event === 'SIGNED_OUT') {
+    _cachedFamilyId = null;
+  }
+});
 const CATS_E=[
   {id:'salario',label:'Salário',color:'#00e676'},
   {id:'freela',label:'Freela',color:'#4fc3f7'},
